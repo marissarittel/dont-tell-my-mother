@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What’s your romantasy name? · Don’t Tell My Mother</title>
+<meta name="description" content="Five questions. One questionable destiny. A little diversion from Indie Thorpewood.">
+<meta name="theme-color" content="#1e1022">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum-deep:#1e1022;
+  --plum:#2d1733;
+  --plum-soft:#3d2244;
+  --ivory:#f6efe3;
+  --ivory-dim:#e6dccb;
+  --rose:#c4878c;
+  --rose-deep:#9a5c64;
+  --gold:#b8964f;
+  --gold-light:#d4b97a;
+  --serif-display:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --serif-body:"Lora", Georgia, "Times New Roman", serif;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;min-height:100dvh;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% -10%, #4a2752 0%, transparent 60%),
+    radial-gradient(ellipse 90% 50% at 50% 110%, #3a1d3a 0%, transparent 65%),
+    var(--plum-deep);
+  color:var(--ivory);
+  font-family:var(--serif-body);
+  font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit}
+a{color:var(--gold-light)}
+:focus-visible{outline:2px solid var(--gold-light);outline-offset:3px}
+
+.preview-banner{
+  background:var(--gold);color:var(--plum-deep);
+  font-size:13px;line-height:1.4;text-align:center;padding:8px 14px;
+  font-family:system-ui,-apple-system,sans-serif;
+}
+.preview-banner strong{font-weight:700}
+
+.shell{max-width:560px;margin:0 auto;padding:28px 22px 48px;min-height:calc(100dvh - 40px);display:flex;flex-direction:column}
+.screen{display:none;flex:1;flex-direction:column}
+.screen.active{display:flex;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.active{animation:none}*{transition:none!important}}
+
+.eyebrow{
+  font-family:var(--serif-body);font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold-light);margin:0 0 14px;
+}
+.ornament{display:flex;align-items:center;gap:12px;color:var(--gold);margin:22px 0}
+.ornament::before,.ornament::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.ornament span{font-size:12px;letter-spacing:.3em}
+
+h1,h2{font-family:var(--serif-display);font-weight:600;line-height:1.1;margin:0}
+h1{font-size:clamp(42px,11vw,58px);letter-spacing:-.01em}
+h2{font-size:clamp(30px,8vw,40px)}
+h2:focus{outline:none}
+
+
+/* Scenery */
+.scenery{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.sky{position:absolute;inset:0}
+.star{position:absolute;width:2px;height:2px;border-radius:50%;background:#f6efe3;opacity:.5;animation:twinkle 5s ease-in-out infinite}
+.star.big{width:3px;height:3px;box-shadow:0 0 6px rgba(246,239,227,.6)}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.75}}
+.moon{position:absolute;top:clamp(56px,9vh,96px);right:clamp(18px,9vw,140px);width:54px;height:54px;border-radius:50%;
+  box-shadow:12px -4px 0 0 #efe2c4;transform:rotate(-18deg);filter:drop-shadow(0 0 18px rgba(239,226,196,.35))}
+.castle{position:absolute;left:0;right:0;bottom:0;width:100%;height:clamp(170px,34vh,320px)}
+.preview-banner,.shell,.modal{position:relative;z-index:1}
+.modal{position:fixed;z-index:10}
+@media (prefers-reduced-motion:reduce){.star{animation:none}}
+@media (max-width:599px){.moon{top:clamp(128px,17vh,160px);right:7vw;width:44px;height:44px;box-shadow:10px -3px 0 0 #efe2c4}}
+
+/* Landing */
+.landing{justify-content:center;text-align:center;padding:20px 0}
+.landing-frame{border:1px solid rgba(184,150,79,.55);border-radius:4px;padding:44px 26px 36px;position:relative;background:rgba(30,16,34,.5)}
+.landing-frame::before{content:"";position:absolute;inset:6px;border:1px solid rgba(184,150,79,.25);border-radius:2px;pointer-events:none}
+.intro{font-size:18px;color:var(--ivory-dim);margin:22px auto 30px;max-width:30em}
+.small{font-size:14px;color:var(--rose);font-style:italic;margin:16px 0 0}
+.byline{font-size:13px;color:var(--ivory-dim);opacity:.8;margin-top:36px;letter-spacing:.04em}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:52px;padding:14px 28px;border-radius:999px;border:1px solid var(--gold);
+  background:var(--gold);color:var(--plum-deep);font-weight:500;font-size:17px;
+  cursor:pointer;text-decoration:none;transition:background .2s,transform .1s;
+}
+.btn:hover{background:var(--gold-light)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:rgba(30,16,34,.7);color:var(--ivory);border-color:rgba(246,239,227,.35)}
+.btn.ghost:hover{border-color:var(--gold-light);background:rgba(246,239,227,.05)}
+.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.btn-block{width:100%}
+
+/* Quiz */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px;min-height:44px}
+.back{background:none;border:none;color:var(--ivory-dim);cursor:pointer;padding:10px 6px;font-size:15px;display:flex;align-items:center;gap:6px}
+.back:hover{color:var(--gold-light)}
+.back[hidden]{display:flex;visibility:hidden}
+.progress{display:flex;gap:7px;align-items:center}
+.progress .dot{width:26px;height:4px;border-radius:2px;background:rgba(246,239,227,.18);transition:background .25s}
+.progress .dot.done{background:var(--rose)}
+.progress .dot.current{background:var(--gold-light)}
+.step-label{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-light);margin:0 0 10px}
+.q-sub{font-family:var(--serif-display);font-style:italic;font-size:22px;color:var(--rose);margin:6px 0 0}
+.options{display:flex;flex-direction:column;gap:12px;margin:28px 0 20px}
+.option{
+  text-align:left;width:100%;min-height:64px;padding:16px 18px 16px 56px;position:relative;
+  background:rgba(36,20,42,.82);border:1px solid rgba(246,239,227,.2);border-radius:var(--radius);
+  cursor:pointer;transition:border-color .2s,background .2s;line-height:1.45;
+}
+.option:hover{border-color:rgba(212,185,122,.7);background:rgba(48,28,56,.9)}
+.option .key{
+  position:absolute;left:16px;top:16px;width:26px;height:26px;border-radius:50%;
+  border:1px solid rgba(212,185,122,.6);color:var(--gold-light);
+  font-family:var(--serif-display);font-size:15px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+}
+.option .lead{display:block;font-size:17px;color:var(--ivory)}
+.option .detail{display:block;font-size:15px;color:var(--ivory-dim);font-style:italic;margin-top:2px}
+.option[aria-checked="true"]{border-color:var(--gold-light);background:rgba(70,50,46,.92)}
+.option[aria-checked="true"] .key{background:var(--gold);color:var(--plum-deep);border-color:var(--gold)}
+.quiz-foot{margin-top:auto;display:flex;justify-content:flex-end}
+.next[hidden]{display:none}
+.hint{font-size:13px;color:var(--ivory-dim);opacity:.65;margin:0}
+
+/* Result */
+.result{padding-top:6px}
+.card{
+  background:var(--ivory);color:var(--plum);border-radius:6px;padding:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+.card-inner{
+  border:2px solid var(--gold);padding:6px;border-radius:2px;
+}
+.card-inner2{
+  border:1px solid rgba(184,150,79,.6);padding:34px 22px 26px;text-align:center;position:relative;
+}
+.card .eyebrow{color:var(--rose-deep);margin-bottom:18px;font-size:11px}
+.card-name{font-family:var(--serif-display);font-weight:600;font-size:clamp(38px,11vw,52px);line-height:1.02;color:var(--plum);word-break:break-word}
+.card-title{font-family:var(--serif-display);font-style:italic;font-size:clamp(21px,6vw,26px);color:var(--rose-deep);margin:12px 0 0;line-height:1.25}
+.card .ornament{color:var(--gold);margin:22px 10px}
+.card-story{font-size:16.5px;line-height:1.65;text-align:left;margin:0;color:#3b2540}
+.card-foot{margin-top:26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.actions{display:grid;gap:12px;margin:26px 0 8px}
+.status{min-height:24px;font-size:14px;color:var(--gold-light);text-align:center;margin:4px 0 0}
+.fine{font-size:13px;font-style:italic;color:var(--ivory-dim);opacity:.8;text-align:center;margin:10px 0 0}
+
+.after{margin-top:38px;padding:30px 24px;border:1px solid rgba(184,150,79,.45);border-radius:4px;background:rgba(30,16,34,.85)}
+.after h2{font-size:30px}
+.after p{color:var(--ivory-dim);margin:14px 0 0}
+.after .btn{margin-top:22px}
+.after .secondary{font-size:15px;margin-top:18px}
+.unavailable{
+  display:block;margin-top:10px;font-family:system-ui,-apple-system,sans-serif;font-size:12px;
+  color:var(--plum-deep);background:var(--rose);padding:6px 10px;border-radius:6px;text-align:center
+}
+
+.books{margin-top:34px}
+.books[hidden]{display:none}
+.books h2{font-size:28px}
+.books-type{margin:6px 0 0;font-family:var(--serif-display);font-style:italic;font-size:20px;color:var(--rose)}
+.books ul{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:14px}
+.books li{padding:14px 16px;border-left:2px solid var(--gold);background:rgba(30,16,34,.85)}
+.bk-title{font-family:var(--serif-display);font-style:italic;font-size:21px;color:var(--ivory)}
+.bk-author{font-size:14px;color:var(--gold-light)}
+.bk-note{display:block;font-size:15px;color:var(--ivory-dim);margin-top:4px}
+
+/* Card modal */
+.modal{position:fixed;inset:0;background:rgba(14,6,16,.88);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal.open{display:flex}
+.modal-box{max-width:420px;width:100%;text-align:center}
+.modal img{width:100%;height:auto;border-radius:4px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-height:62vh;object-fit:contain}
+.modal p{font-size:14px;color:var(--ivory-dim);margin:14px 0}
+.modal .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (min-width:600px){
+  .shell{padding-top:48px}
+  .actions{grid-template-columns:1fr 1fr}
+  .actions .btn:first-child{grid-column:1 / -1}
+}
+</style>
+</head>
+<body>
+<div class="scenery" aria-hidden="true">
+  <div class="sky" id="sky"></div>
+  <div class="moon"></div>
+  <svg class="castle" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1e1022" stop-opacity="0"/>
+        <stop offset="1" stop-color="#1e1022" stop-opacity=".9"/>
+      </linearGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+    </defs>
+    <!-- far hills and a distant tower -->
+    <path fill="#2b1631" d="M0 400V250c80-30 150-40 240-10s160 20 230-15 150-45 250-10 170 40 250 5 140-30 230 10V400Z"/>
+    <path fill="#2b1631" d="M1010 250v-70h8v-12l14-30 14 30v12h8v70Z"/>
+    <path fill="#2b1631" d="M150 258v-48h6l10-22 10 22h6v48Z"/>
+    <!-- main castle -->
+    <g fill="#0f0712">
+      <path d="M0 400V335c120-25 250-25 380-12h440c130-14 260-12 380 10V400Z"/>
+      <rect x="380" y="318" width="440" height="82"/>
+      <rect x="384" y="306" width="14" height="14"/><rect x="412" y="306" width="14" height="14"/><rect x="440" y="306" width="14" height="14"/><rect x="468" y="306" width="14" height="14"/><rect x="496" y="306" width="14" height="14"/><rect x="524" y="306" width="14" height="14"/><rect x="552" y="306" width="14" height="14"/><rect x="580" y="306" width="14" height="14"/><rect x="608" y="306" width="14" height="14"/><rect x="636" y="306" width="14" height="14"/><rect x="664" y="306" width="14" height="14"/><rect x="692" y="306" width="14" height="14"/><rect x="720" y="306" width="14" height="14"/><rect x="748" y="306" width="14" height="14"/><rect x="776" y="306" width="14" height="14"/><rect x="804" y="306" width="14" height="14"/>
+      <rect x="392" y="252" width="38" height="148"/><path d="M386 254 410 196 434 254Z"/>
+      <rect x="440" y="212" width="62" height="188"/><path d="M432 214 471 126 510 214Z"/>
+      <rect x="540" y="168" width="120" height="232"/><path d="M530 170 600 58 670 170Z"/>
+      <rect x="598" y="22" width="3" height="40"/><path d="M601 24h22l-6 7 6 7h-22Z"/>
+      <rect x="700" y="202" width="64" height="198"/><path d="M692 204 732 112 772 204Z"/>
+      <rect x="774" y="248" width="36" height="152"/><path d="M768 250 792 198 816 250Z"/>
+      <path d="M572 400v-58a28 28 0 0 1 56 0v58Z" fill="#070308"/>
+    </g>
+    <!-- lit windows -->
+    <g fill="#d4b97a">
+      <g filter="url(#glow)" opacity=".7"><rect x="592" y="200" width="16" height="24" rx="8.0"/><rect x="467" y="250" width="8" height="14" rx="4.0"/><rect x="728" y="236" width="8" height="14" rx="4.0"/><rect x="406" y="282" width="7" height="12" rx="3.5"/></g>
+      <g opacity=".9"><rect x="592" y="200" width="16" height="24" rx="8.0"/><rect x="467" y="250" width="8" height="14" rx="4.0"/><rect x="728" y="236" width="8" height="14" rx="4.0"/><rect x="406" y="282" width="7" height="12" rx="3.5"/><rect x="560" y="250" width="7" height="12" rx="3.5"/><rect x="633" y="250" width="7" height="12" rx="3.5"/><rect x="786" y="284" width="7" height="12" rx="3.5"/></g>
+      <g opacity=".35"><rect x="467" y="300" width="8" height="14" rx="4.0"/><rect x="728" y="300" width="8" height="14" rx="4.0"/></g>
+    </g>
+    <rect x="0" y="300" width="1200" height="100" fill="url(#mist)"/>
+  </svg>
+</div>
+
+<div class="preview-banner" id="previewBanner" hidden></div>
+
+<main class="shell">
+
+  <!-- LANDING -->
+  <section class="screen landing active" id="screen-landing" aria-labelledby="landingTitle">
+    <div class="landing-frame">
+      <p class="eyebrow" data-copy="landing.eyebrow"></p>
+      <h1 id="landingTitle" data-copy="landing.headline"></h1>
+      <p class="intro" data-copy="landing.intro"></p>
+      <button class="btn" id="startBtn" type="button" data-copy="landing.button"></button>
+      <p class="small" data-copy="landing.small"></p>
+      <p class="byline" data-copy="landing.byline"></p>
+    </div>
+  </section>
+
+  <!-- QUESTION -->
+  <section class="screen" id="screen-quiz" aria-labelledby="qPrompt">
+    <div class="topbar">
+      <button class="back" id="backBtn" type="button"><span aria-hidden="true">←</span> Back</button>
+      <div class="progress" id="progress" aria-hidden="true"></div>
+    </div>
+    <p class="step-label" id="stepLabel" aria-live="polite"></p>
+    <h2 id="qPrompt" tabindex="-1"></h2>
+    <p class="q-sub" id="qSub"></p>
+    <div class="options" id="options" role="radiogroup" aria-labelledby="qPrompt"></div>
+    <div class="quiz-foot">
+      <p class="hint" id="kbdHint">Tip: press A–D or 1–4 to choose.</p>
+    </div>
+    <div class="quiz-foot" style="margin-top:14px">
+      <button class="btn ghost next" id="nextBtn" type="button" hidden>Next →</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen result" id="screen-result" aria-labelledby="resultName">
+    <article class="card" id="card">
+      <div class="card-inner"><div class="card-inner2">
+        <p class="eyebrow" data-copy="result.eyebrow"></p>
+        <h2 class="card-name" id="resultName" tabindex="-1"></h2>
+        <p class="card-title" id="resultTitle"></p>
+        <div class="ornament" aria-hidden="true"><span>✦</span></div>
+        <p class="card-story" id="resultStory"></p>
+        <p class="card-foot" data-copy="result.footer"></p>
+      </div></div>
+    </article>
+
+    <div class="actions">
+      <button class="btn" id="saveBtn" type="button" data-copy="result.saveButton"></button>
+      <button class="btn ghost" id="copyBtn" type="button" data-copy="result.copyButton"></button>
+      <button class="btn ghost" id="restartBtn" type="button" data-copy="result.restartButton"></button>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <p class="fine" data-copy="result.small"></p>
+
+    <section class="books" id="books" aria-labelledby="booksTitle">
+      <h2 id="booksTitle" data-copy="result.booksHeading"></h2>
+      <p class="books-type" id="booksType"></p>
+      <ul id="bookList"></ul>
+    </section>
+
+    <aside class="after" id="after" aria-labelledby="afterTitle">
+      <h2 id="afterTitle" data-copy="after.heading"></h2>
+      <p data-copy="after.copy"></p>
+      <div id="subscribeSlot"></div>
+      <p class="secondary" data-copy="after.secondary"></p>
+    </aside>
+  </section>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalText">
+  <div class="modal-box">
+    <img id="modalImg" alt="Your romantasy character card">
+    <p id="modalText">Your character card is ready. If the download doesn’t start, press and hold the image to save it.</p>
+    <div class="row">
+      <a class="btn" id="modalDownload" download="romantasy-alter-ego.png">Download image</a>
+      <button class="btn ghost" id="modalClose" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================================
+     EDITABLE CONTENT
+     Everything readers see lives here. Change wording freely; keep the
+     quotation marks and commas. Each question needs exactly four options.
+     ===================================================================== -->
+<script id="quiz-data">
+const CONFIG = {
+  // Paste your confirmed Substack subscribe URL here, e.g. "https://example.substack.com/subscribe"
+  substackUrl: "",
+  // true = review preview (shows a banner and labels unconnected links).
+  // Set to false before publishing. Unconnected buttons are then hidden instead.
+  isPreview: false,
+  // Optional: the public quiz address, added to copied results once you have one.
+  quizUrl: "",
+  downloadFileName: "romantasy-alter-ego.png"
+};
+
+const COPY = {
+  landing: {
+    eyebrow: "Don’t Tell My Mother",
+    headline: "What’s your romantasy name?",
+    intro: "Somewhere, there’s a kingdom in crisis and a dangerously attractive stranger making it your problem. Let’s find out what they’re calling you.",
+    button: "Reveal my alter ego",
+    small: "Five questions. One questionable destiny.",
+    byline: "A little diversion from Indie Thorpewood."
+  },
+  result: {
+    eyebrow: "Your Romantasy Alter Ego",
+    footer: "Don’t Tell My Mother · Indie Thorpewood",
+    saveButton: "Save my character card",
+    copyButton: "Copy my result",
+    restartButton: "Try another destiny",
+    booksHeading: "Your next fictional problem",
+    small: "Entirely fictional. Your taste in fictional problems, however, is your own."
+  },
+  after: {
+    heading: "Excellent taste. Questionable fictional men.",
+    copy: "I’m Indie Thorpewood. I write about romance, romantasy, and the books that make “one more chapter” a terrible lie. Subscribe to Don’t Tell My Mother for occasional free reviews and recommendations.",
+    button: "Find my next read",
+    secondary: "Want the fuller conversation? The $5/month membership includes more reviews and subscriber-only book chat."
+  }
+};
+
+// Each question fills one part of the result: firstName, surname, title, story, or ending.
+const QUESTIONS = [
+  {
+    fills: "firstName",
+    prompt: "Choose a magical gift.",
+    sub: "Ignore the consequences.",
+    options: [
+      { lead: "Read minds.", detail: "Especially when someone says, “It’s nothing.”", result: "Vesper" },
+      { lead: "Command shadows.", detail: "Excellent for dramatic exits.", result: "Nyra" },
+      { lead: "Heal with a touch.", detail: "Unfortunately, you do hold grudges.", result: "Elara" },
+      { lead: "Speak to dragons.", detail: "Finally, a reasonable conversation.", result: "Seren" }
+    ]
+  },
+  {
+    fills: "surname",
+    prompt: "Where are you absolutely not supposed to go?",
+    sub: "",
+    options: [
+      { lead: "The royal library’s locked wing.", detail: "The books are chained up for a reason.", result: "Thorpewood" },
+      { lead: "The forest beyond the border.", detail: "Something there knows your name.", result: "Briarvale" },
+      { lead: "The rival court’s masked ball.", detail: "You already have an outfit.", result: "Ashbourne" },
+      { lead: "The ruined temple.", detail: "Someone has been leaving fresh flowers.", result: "Thornmere" }
+    ]
+  },
+  {
+    fills: "title",
+    prompt: "What is your greatest weakness?",
+    sub: "",
+    options: [
+      { lead: "Being told something is forbidden.", detail: "", result: "Keeper of the Forbidden Archive" },
+      { lead: "A convincing apology from an unconvincing man.", detail: "", result: "Heir to the Court of Second Chances" },
+      { lead: "Insisting you can handle it yourself.", detail: "", result: "Warden of the Unbroken Tower" },
+      { lead: "Needing to have the last word, even during an assassination attempt.", detail: "", result: "The Crown’s Last Mistake" }
+    ]
+  },
+  {
+    fills: "story",
+    prompt: "Who is about to make your life unnecessarily complicated?",
+    sub: "",
+    options: [
+      { type: "Royal with secrets",
+        lead: "A royal with impeccable manners and a suspicious number of things he can’t explain.", detail: "",
+        result: "You agreed to help a charming royal recover a stolen relic. He neglected to mention what it does, who else wants it, or why everyone keeps mistaking you for his intended.",
+        books: [
+          { title: "The Wolf King", author: "Lauren Palphreyman", note: "On the eve of her arranged wedding, a princess is abducted by a werewolf alpha in the middle of a war between humans and wolves. The attraction that follows is very much forbidden." },
+          { title: "The Serpent and the Wings of Night", author: "Carissa Broadbent", note: "The human adopted daughter of a vampire king enters a deadly tournament and forms an uneasy alliance with a dangerous rival she can’t afford to trust." },
+          { title: "The Ever King", author: "LJ Andrews", note: "A scarred sea-fae king kidnaps his enemy’s daughter in revenge. Pirates, fae and a very personal grudge." }
+        ] },
+      { type: "Lethal adversary",
+        lead: "A lethal adversary who keeps ruining your plans and becoming increasingly difficult to ignore.", detail: "",
+        result: "A common enemy has forced you into an alliance with the person most likely to kill you. Unfortunately, surviving together is revealing qualities you preferred not to notice.",
+        books: [
+          { title: "Fourth Wing", author: "Rebecca Yarros", note: "A war college where cadets die regularly, dragons who choose their riders, and a wingleader with every reason to want her dead." },
+          { title: "Dire Bound", author: "Sable Sorensen", note: "A commoner in the deadly Bonding Trials, a feral direwolf who won’t speak to her, and a cold instructor eager to punish any weakness. First in The Wolves of Ruin." },
+          { title: "Nightwild Rising", author: "L. Ann", note: "A princess’s birthday hunt goes wrong, and by nightfall she is the captive of the fae warrior who was supposed to be the quarry. Dark fae romantasy, enemies to lovers, slow burn. Check the content notes first." }
+        ] },
+      { type: "Insufferable immortal know-it-all",
+        lead: "An insufferable immortal who knows everything, explains nothing, and finds your objections amusing.", detail: "",
+        result: "Your magic has developed a problem that only one immortal claims to understand. He has centuries of experience, an answer for everything, and an irritating habit of being right.",
+        books: [
+          { title: "Emily Wilde’s Encyclopaedia of Faeries", author: "Heather Fawcett", note: "A prickly scholar studying faeries, and a charming colleague who knows far more about the subject than he lets on. Cozy and slow burn." },
+          { title: "Bound", author: "Ali Hazelwood", note: "A reluctant con artist is drawn into forging an ancient manuscript for a reserved, very British professor with too many secrets. Novella length." }
+        ] },
+      { type: "Possessive protector",
+        lead: "A possessive protector who insists you’re safer with him. You’re still discussing whether that makes you a guest or a prisoner.", detail: "",
+        result: "A dangerous man has taken responsibility for your safety without asking your opinion. He calls it protection. You have questions about the locked doors.",
+        books: [
+          { title: "From Blood and Ash", author: "Jennifer L. Armentrout", note: "A closely guarded Maiden and the new guard assigned to keep her safe. Protection, with secrets on both sides." },
+          { title: "Shield of Sparrows", author: "Devney Perry", note: "The overlooked spare princess is married off by treaty and sent to a monster-ridden kingdom, under the watch of the prince’s sworn protector. A slow burn." },
+          { title: "Mate", author: "Ali Hazelwood", note: "A one-of-a-kind human–Were hybrid whose past is catching up with her, and an alpha who may be the only thing standing between her and disaster. A companion to Bride that works as a standalone." }
+        ] }
+    ]
+  },
+  {
+    fills: "ending",
+    prompt: "One final complication.",
+    sub: "Pick your favorite.",
+    options: [
+      { lead: "There is, of course, only one bed.", detail: "",
+        result: "Somehow, there is only one bed. You intend to be very mature about this." },
+      { lead: "Your magic has started reacting to your feelings. Publicly.", detail: "",
+        result: "Meanwhile, every feeling you refuse to acknowledge has started manifesting spectacularly." },
+      { lead: "A prophecy describes you in terms you consider deeply unflattering.", detail: "",
+        result: "There is also a prophecy. You would like to speak to whoever wrote your character description." },
+      { lead: "You’ve already lied about something important. They definitely believed you.", detail: "",
+        result: "Your plan depends on a lie you told with tremendous confidence. Keeping it up is becoming inconvenient." }
+    ]
+  }
+];
+
+// Builds the result from five answers (each 0–3). Deterministic: same answers, same result.
+function buildResult(answers) {
+  // Book picks follow the love-interest question only. Edit them in that question above.
+  const si = QUESTIONS.findIndex((q) => q.fills === "story");
+  const storyChoice = () => QUESTIONS[si].options[answers[si]];
+  const parts = {};
+  QUESTIONS.forEach((q, i) => { parts[q.fills] = q.options[answers[i]].result; });
+  return {
+    name: parts.firstName + " " + parts.surname,
+    title: parts.title,
+    story: parts.story + " " + parts.ending,
+    loveInterest: storyChoice().type || "",
+    books: storyChoice().books || []
+  };
+}
+</script>
+
+<!-- ===================== APP LOGIC (no need to edit) ===================== -->
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const LETTERS = ["A", "B", "C", "D"];
+  const state = { step: 0, answers: new Array(QUESTIONS.length).fill(null) };
+  let advanceTimer = null;
+
+  // Stars (decorative)
+  (function () {
+    const sky = $("sky"); let seed = 7;
+    const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+    for (let i = 0; i < 70; i++) {
+      const st = document.createElement("span");
+      st.className = "star" + (rnd() > 0.88 ? " big" : "");
+      st.style.left = (rnd() * 100) + "%";
+      st.style.top = (rnd() * 62) + "%";
+      st.style.animationDelay = (-rnd() * 5) + "s";
+      st.style.animationDuration = (3 + rnd() * 4) + "s";
+      sky.appendChild(st);
+    }
+  })();
+
+  // Fill static copy
+  document.querySelectorAll("[data-copy]").forEach((el) => {
+    const [group, key] = el.dataset.copy.split(".");
+    el.textContent = COPY[group][key];
+  });
+
+  // Preview banner
+  if (CONFIG.isPreview) {
+    const b = $("previewBanner");
+    b.hidden = false;
+    b.innerHTML = "<strong>Review preview</strong> · Not published. " +
+      (CONFIG.substackUrl ? "Substack link connected." : "Substack link not connected yet.");
+  }
+
+  // Subscribe button: real link, labeled placeholder (preview), or hidden (released, no URL)
+  (function renderSubscribe() {
+    const slot = $("subscribeSlot");
+    if (CONFIG.substackUrl) {
+      const a = document.createElement("a");
+      a.className = "btn btn-block";
+      a.href = CONFIG.substackUrl;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = COPY.after.button;
+      slot.appendChild(a);
+    } else if (CONFIG.isPreview) {
+      const btn = document.createElement("span");
+      btn.className = "btn btn-block";
+      btn.setAttribute("aria-disabled", "true");
+      btn.textContent = COPY.after.button;
+      const note = document.createElement("span");
+      note.className = "unavailable";
+      note.textContent = "Preview only: Substack subscription link not connected yet";
+      slot.append(btn, note);
+    } else {
+      $("after").hidden = true;
+    }
+  })();
+
+  // Progress dots
+  const progress = $("progress");
+  QUESTIONS.forEach(() => { const d = document.createElement("span"); d.className = "dot"; progress.appendChild(d); });
+
+  function show(id) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
+    window.scrollTo(0, 0);
+  }
+
+  function renderQuestion() {
+    const q = QUESTIONS[state.step];
+    $("stepLabel").textContent = "Question " + (state.step + 1) + " of " + QUESTIONS.length;
+    $("qPrompt").textContent = q.prompt;
+    $("qSub").textContent = q.sub || "";
+    $("qSub").hidden = !q.sub;
+    [...progress.children].forEach((d, i) => {
+      d.className = "dot" + (i < state.step ? " done" : i === state.step ? " current" : "");
+    });
+
+    const box = $("options");
+    box.innerHTML = "";
+    const selected = state.answers[state.step];
+    q.options.forEach((opt, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "option";
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", selected === i ? "true" : "false");
+      b.tabIndex = (selected === null ? i === 0 : selected === i) ? 0 : -1;
+      b.innerHTML = '<span class="key" aria-hidden="true">' + LETTERS[i] + "</span>" +
+        '<span class="lead"></span>' + (opt.detail ? '<span class="detail"></span>' : "");
+      b.querySelector(".lead").textContent = opt.lead;
+      if (opt.detail) b.querySelector(".detail").textContent = opt.detail;
+      b.addEventListener("click", () => choose(i));
+      b.addEventListener("keydown", onOptionKey);
+      box.appendChild(b);
+    });
+
+    $("nextBtn").hidden = selected === null;
+    $("nextBtn").textContent = state.step === QUESTIONS.length - 1 ? "See my result →" : "Next →";
+    $("kbdHint").hidden = window.matchMedia("(hover: none)").matches;
+    $("qPrompt").focus({ preventScroll: true });
+  }
+
+  function choose(i) {
+    state.answers[state.step] = i;
+    [...$("options").children].forEach((b, j) => {
+      b.setAttribute("aria-checked", j === i ? "true" : "false");
+      b.tabIndex = j === i ? 0 : -1;
+    });
+    $("nextBtn").hidden = false;
+    clearTimeout(advanceTimer);
+    advanceTimer = setTimeout(next, 320);
+  }
+
+  function next() {
+    clearTimeout(advanceTimer);
+    if (state.answers[state.step] === null) return;
+    if (state.step < QUESTIONS.length - 1) { state.step++; renderQuestion(); }
+    else showResult();
+  }
+
+  function back() {
+    clearTimeout(advanceTimer);
+    if (state.step === 0) { show("screen-landing"); $("startBtn").focus(); return; }
+    state.step--; renderQuestion();
+  }
+
+  function onOptionKey(e) {
+    const opts = [...$("options").children];
+    const idx = opts.indexOf(e.currentTarget);
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); opts[(idx + 1) % opts.length].focus(); }
+    else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); opts[(idx - 1 + opts.length) % opts.length].focus(); }
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (!$("screen-quiz").classList.contains("active") || e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key.toUpperCase();
+    let i = LETTERS.indexOf(k);
+    if (i < 0 && /^[1-4]$/.test(e.key)) i = Number(e.key) - 1;
+    if (i >= 0) { e.preventDefault(); choose(i); $("options").children[i].focus(); }
+    else if (e.key === "Escape") {
+      if (e.target.tagName !== "INPUT") { e.preventDefault(); back(); }
+    }
+  });
+
+  let current = null;
+  function showResult() {
+    current = buildResult(state.answers);
+    $("resultName").textContent = current.name;
+    $("resultTitle").textContent = current.title;
+    $("resultStory").textContent = current.story;
+    $("status").textContent = "";
+    const list = $("bookList"); list.innerHTML = "";
+    current.books.forEach((bk) => {
+      const li = document.createElement("li");
+      li.innerHTML = '<span class="bk-title"></span> <span class="bk-author"></span><span class="bk-note"></span>';
+      li.querySelector(".bk-title").textContent = bk.title;
+      li.querySelector(".bk-author").textContent = "by " + bk.author;
+      li.querySelector(".bk-note").textContent = bk.note;
+      list.appendChild(li);
+    });
+    $("booksType").textContent = current.loveInterest;
+    $("books").hidden = current.books.length === 0;
+    show("screen-result");
+    $("resultName").focus({ preventScroll: true });
+  }
+
+  function restart() {
+    state.step = 0;
+    state.answers.fill(null);
+    renderQuestion();
+    show("screen-quiz");
+  }
+
+  // ---------- Copy ----------
+  function resultText() {
+    let t = COPY.result.eyebrow.toUpperCase() + "\n\n" + current.name + "\n" + current.title + "\n\n" +
+      current.story + "\n\n— " + COPY.result.footer;
+    if (CONFIG.quizUrl) t += "\nFind yours: " + CONFIG.quizUrl;
+    return t;
+  }
+  async function copyResult() {
+    const text = resultText();
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; }
+    catch (_) {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch (_) { ok = false; }
+      ta.remove();
+    }
+    $("status").textContent = ok ? "Copied." : "Couldn’t copy automatically — press and hold the card text to copy.";
+  }
+
+  // ---------- Card image ----------
+  function wrap(ctx, text, maxW) {
+    const words = text.split(/\s+/), lines = [];
+    let line = "";
+    words.forEach((w) => {
+      const test = line ? line + " " + w : w;
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test;
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+  function spaced(ctx, text, x, y, spacing) {
+    const chars = [...text];
+    const total = chars.reduce((s, c) => s + ctx.measureText(c).width, 0) + spacing * (chars.length - 1);
+    let cx = x - total / 2;
+    ctx.textAlign = "left";
+    chars.forEach((c) => { ctx.fillText(c, cx, y); cx += ctx.measureText(c).width + spacing; });
+    ctx.textAlign = "center";
+  }
+  function diamond(ctx, x, y, r) {
+    ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath(); ctx.fill();
+  }
+
+  async function drawCard() {
+    try { await document.fonts.ready; } catch (_) {}
+    const W = 1080, H = 1350, M = 72;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const ctx = c.getContext("2d");
+    const DISPLAY = '"Cormorant Garamond", Georgia, serif';
+    const BODY = 'Lora, Georgia, serif';
+
+    ctx.fillStyle = "#f6efe3"; ctx.fillRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W / 2, H / 2, 200, W / 2, H / 2, 900);
+    g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(184,150,79,0.10)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = "#b8964f";
+    ctx.lineWidth = 5; ctx.strokeRect(40, 40, W - 80, H - 80);
+    ctx.lineWidth = 1.5; ctx.strokeRect(58, 58, W - 116, H - 116);
+    ctx.fillStyle = "#b8964f";
+    [[58, 58], [W - 58, 58], [58, H - 58], [W - 58, H - 58]].forEach(([x, y]) => diamond(ctx, x, y, 11));
+
+    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+    const maxW = W - M * 2 - 80;
+
+    // Measure content to center vertically
+    ctx.font = "600 112px " + DISPLAY;
+    let nameSize = 112;
+    while (ctx.measureText(current.name).width > maxW && nameSize > 64) { nameSize -= 4; ctx.font = "600 " + nameSize + "px " + DISPLAY; }
+    const nameLines = wrap(ctx, current.name, maxW);
+
+    ctx.font = "italic 500 54px " + DISPLAY;
+    const titleLines = wrap(ctx, current.title, maxW);
+
+    let storySize = 36, storyLines, storyLH;
+    const avail = () => H - 2 * 150 - (nameLines.length * nameSize * 1.02 + 40 + titleLines.length * 62 + 120 + 70);
+    do {
+      ctx.font = storySize + "px " + BODY;
+      storyLH = storySize * 1.55;
+      storyLines = wrap(ctx, current.story, maxW);
+      if (storyLines.length * storyLH <= avail()) break;
+      storySize -= 2;
+    } while (storySize > 24);
+
+    const blockH = 40 + nameLines.length * nameSize * 1.02 + 26 + titleLines.length * 62 + 110 + storyLines.length * storyLH;
+    let y = Math.max(170, (H - blockH) / 2 - 10);
+
+    ctx.fillStyle = "#9a5c64"; ctx.font = "500 24px " + BODY;
+    spaced(ctx, COPY.result.eyebrow.toUpperCase(), W / 2, y, 7);
+    y += 40;
+
+    ctx.fillStyle = "#2d1733"; ctx.font = "600 " + nameSize + "px " + DISPLAY;
+    nameLines.forEach((l) => { y += nameSize * 1.02; ctx.fillText(l, W / 2, y - nameSize * 0.18); });
+    y += 26;
+
+    ctx.fillStyle = "#9a5c64"; ctx.font = "italic 500 54px " + DISPLAY;
+    titleLines.forEach((l) => { y += 62; ctx.fillText(l, W / 2, y - 10); });
+
+    // Ornament divider
+    y += 55;
+    ctx.strokeStyle = "#b8964f"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(W / 2 - 220, y); ctx.lineTo(W / 2 - 24, y); ctx.moveTo(W / 2 + 24, y); ctx.lineTo(W / 2 + 220, y); ctx.stroke();
+    ctx.fillStyle = "#b8964f"; diamond(ctx, W / 2, y, 9);
+    y += 55;
+
+    ctx.fillStyle = "#3b2540"; ctx.font = storySize + "px " + BODY; ctx.textAlign = "left";
+    const left = M + 40;
+    storyLines.forEach((l) => { y += storyLH; ctx.fillText(l, left, y - storyLH * 0.3); });
+    ctx.textAlign = "center";
+
+    ctx.fillStyle = "#b8964f"; ctx.font = "500 22px " + BODY;
+    spaced(ctx, COPY.result.footer.toUpperCase(), W / 2, H - 112, 5);
+
+    return c;
+  }
+
+  async function saveCard() {
+    $("status").textContent = "Preparing your card…";
+    try {
+      const canvas = await drawCard();
+      const url = canvas.toDataURL("image/png");
+      $("modalImg").src = url;
+      const dl = $("modalDownload");
+      dl.href = url; dl.download = CONFIG.downloadFileName;
+      $("modal").classList.add("open");
+      $("status").textContent = "";
+      try { dl.click(); } catch (_) {}
+      $("modalClose").focus();
+    } catch (err) {
+      $("status").textContent = "The card couldn’t be created in this browser. Try “Copy my result” instead.";
+    }
+  }
+  function closeModal() { $("modal").classList.remove("open"); $("saveBtn").focus(); }
+
+  // Wire up
+  $("startBtn").addEventListener("click", () => { renderQuestion(); show("screen-quiz"); renderQuestion(); });
+  $("backBtn").addEventListener("click", back);
+  $("nextBtn").addEventListener("click", next);
+  $("copyBtn").addEventListener("click", copyResult);
+  $("saveBtn").addEventListener("click", saveCard);
+  $("restartBtn").addEventListener("click", restart);
+  $("modalClose").addEventListener("click", closeModal);
+  $("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("modal").classList.contains("open")) closeModal(); });
+})();
+</script>
+</body>
+</html>
